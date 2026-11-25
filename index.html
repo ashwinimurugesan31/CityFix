@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CityFix</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
+</head>
+
+<body>
+
+   
+<nav>
+    <a href="index.html">Home</a>
+    <a href="report.html">Report an Issue</a>
+    <a href="track.html">Track Complaint</a>
+    <a href="admin.html">Admin Dashboard</a>
+    <select id="languageSelect" aria-label="Select Language">
+    <option value="en">English</option>
+    <option value="ta">தமிழ்</option>
+    <option value="hi">हिन्दी</option>
+    <option value="ml">മലയാളം</option>
+    <option value="te">తెలుగు</option>
+</select>
+</nav>
+<main>
+    <h2 data-i18n="heading">
+        Smart Civic Issue Reporting System
+    </h2>
+
+    <p data-i18n="description">
+        Report potholes, garbage, broken streetlights,
+        water leakage and other civic problems.
+    </p>
+
+    <a href="report.html" class="home-btn"
+       data-i18n="reportBtn">Report an Issue</a>
+
+    <a href="track.html" class="home-btn"
+       data-i18n="trackBtn">Track Complaint</a>
+
+    <a href="admin.html" class="home-btn"
+       data-i18n="adminBtn">Admin Dashboard</a>
+</main>
+    <script type="module" src="script.js"></script> 
+    <script src="language.js"></script>
+    <script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./service-worker.js');
+}
+</script>
+</body>
+</html>

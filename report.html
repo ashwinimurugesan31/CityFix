@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CityFix - Report Issue</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<nav>
+   <a href="index.html" data-i18n="home">Home</a>
+   <a href="report.html" data-i18n="report">Report an Issue</a>
+   <a href="track.html" data-i18n="track">Track Complaint</a>
+   <a href="admin.html" data-i18n="admin">Admin Dashboard</a>
+</nav>
+    <h1 data-i18n="reportHeading">
+    CityFix - Report an Issue
+    </h1>
+    <p data-i18n="reportSubtitle">Help us make our city better</p>
+    <form id="complaintForm">
+
+        <label data-i18n="yourName">Your Name</label>
+        <input type="text" id="name" placeholder="Enter your name" required>
+
+        <label data-i18n="phoneNumber">Phone Number</label>
+        <input type="tel" id="phone" placeholder="Enter phone number" required>
+
+        <label data-i18n="issueTypeLabel">Issue Type</label>
+        <select id="issueType" required>
+             <option value="" data-i18n="selectIssue">Select Issue</option>
+             <option value="Pothole" data-i18n="pothole">Pothole</option>
+              <option value="Garbage" data-i18n="garbage">Garbage</option>
+              <option value="Streetlight" data-i18n="streetlight">Streetlight</option>
+             <option value="Water Leakage" data-i18n="waterLeakage">Water Leakage</option>
+             <option value="Drainage" data-i18n="drainage">Drainage</option>
+              <option value="Other" data-i18n="other">Other</option>
+        </select>
+
+        <label data-i18n="location">Location</label>
+        <input type="text" id="location" placeholder="Enter location" required>
+
+        <label data-i18n="descriptionLabel">Description</label>
+        <textarea id="description" placeholder="Describe the problem" required></textarea>
+
+       <label data-i18n="severityLabel">Severity</label>
+        <select id="severity" required>
+           <option value="" data-i18n="selectSeverity">Select Severity</option>
+           <option value="Low" data-i18n="low">Low</option>
+           <option value="Medium" data-i18n="medium">Medium</option>
+         <option value="High" data-i18n="high">High</option>
+        </select>
+
+        <button type="submit" data-i18n="submitBtn">
+             Submit Complaint
+       </button>
+
+    </form>
+
+    <div id="result"></div>
+    <script type="module"
+     src="script.js"></script>
+    <script src="language.js"></script>  
+</body>
+</html>

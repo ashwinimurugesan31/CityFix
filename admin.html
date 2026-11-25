@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CityFix - Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="language.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f2f5f9;
+            color: #263238;
+        }
+
+        header {
+            background: #173b65;
+            color: white;
+            padding: 22px;
+            text-align: center;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 1200px;
+            margin: 30px auto;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 22px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px #00000012;
+            text-align: center;
+        }
+
+        .card h3 {
+            margin: 0 0 12px;
+            color: #526579;
+        }
+
+        .card p {
+            font-size: 30px;
+            font-weight: bold;
+            margin: 0;
+            color: #173b65;
+        }
+
+        .table-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 850px;
+        }
+
+        th, td {
+            padding: 13px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #173b65;
+            color: white;
+        }
+
+        select, button {
+            padding: 9px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background: #d93636;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #ad2020;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 25px;
+            color: #777;
+        }
+
+        .top-links {
+            text-align: center;
+            margin: 20px;
+        }
+
+        .top-links a {
+            color: #173b65;
+            margin: 0 10px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+<nav>
+    <a href="index.html" data-i18n="home">Home</a>
+    <a href="report.html" data-i18n="report">Report an Issue</a>
+    <a href="track.html" data-i18n="track">Track Complaint</a>
+    <a href="admin.html" data-i18n="admin">Admin Dashboard</a>
+</nav>
+<header>
+    <h1 data-i18n="adminTitle">CityFix Admin Dashboard</h1>
+    <p data-i18n="adminSubtitle">Manage and Monitor City Complaints</p>
+</header>
+<div class="container">
+
+    <div class="summary">
+
+        <div class="card">
+         <h3 data-i18n="totalComplaints">Total Complaints</h3>  
+            <p id="totalCount">0</p>
+        </div>
+
+        <div class="card">
+          <h3 data-i18n="pending">Pending</h3> 
+            <p id="pendingCount">0</p>
+        </div>
+
+        <div class="card">
+         <h3 data-i18n="inProgress">In Progress</h3>  
+            <p id="progressCount">0</p>
+        </div>
+
+        <div class="card">
+            <h3 data-i18n="resolved">Resolved</h3>
+            <p id="resolvedCount">0</p>
+        </div>
+
+    </div>
+
+    <div class="table-box">
+       <h2 data-i18n="allComplaints">All Complaints</h2>    
+
+        <table>
+         <thead>
+    <tr>
+        <th data-i18n="complaintIdHeader">Complaint ID</th>
+        <th data-i18n="nameHeader">Name</th>
+        <th data-i18n="phoneHeader">Phone</th>
+        <th data-i18n="issueTypeHeader">Issue Type</th>
+        <th data-i18n="location">Location</th>
+        <th data-i18n="descriptionLabel">Description</th>
+        <th data-i18n="severityLabel">Severity</th>
+        <th data-i18n="statusLabel">Status</th>
+        <th data-i18n="actionHeader">Action</th>
+    </tr>
+</thead>  
+
+            <tbody id="complaintTable">
+            </tbody>
+        </table>
+<p id="emptyMessage" class="empty" style="display:none;" data-i18n="noComplaints">
+    No complaints submitted yet.
+</p>
+        
+    </div>
+
+</div>
+
+<script>
+    function getComplaints() {
+        return JSON.parse(localStorage.getItem("complaints") || "[]");
+    }
+
+    function displayComplaints() {
+        const lang = localStorage.getItem("selectedLanguage") || "en";
+    const t = translations[lang] || translations.en;
+        const complaints = getComplaints();
+        const table = document.getElementById("complaintTable");
+        console.log("Table element:", table);
+
+        table.innerHTML = "";
+
+        document.getElementById("totalCount").textContent =
+            complaints.length;
+
+        document.getElementById("pendingCount").textContent =
+            complaints.filter(c => c.status === "Pending").length;
+
+        document.getElementById("progressCount").textContent =
+            complaints.filter(c => c.status === "In Progress").length;
+
+        document.getElementById("resolvedCount").textContent =
+            complaints.filter(c => c.status === "Resolved").length;
+
+        document.getElementById("emptyMessage").style.display =
+            complaints.length === 0 ? "block" : "none";
+
+        complaints.forEach((c, index) => {
+            const row = document.createElement("tr");
+
+            const values = [
+                c.id,
+                c.name,
+                c.phone,
+                c.issueType,
+                c.location,
+                c.description,
+                c.severity
+            ];
+
+            values.forEach(value => {
+                const cell = document.createElement("td");
+                cell.textContent = value || "-";
+                row.appendChild(cell);
+            });
+
+            const statusCell = document.createElement("td");
+            const select = document.createElement("select");
+
+            const statusLabels = {
+    "Pending": t.pending,
+    "In Progress": t.inProgress,
+    "Resolved": t.resolved
+};
+
+["Pending", "In Progress", "Resolved"].forEach(status => {
+    const option = document.createElement("option");
+    option.value = status;
+    option.textContent = statusLabels[status];
+
+    if ((c.status || "Pending") === status) {
+        option.selected = true;
+    }
+
+    select.appendChild(option);
+});
+
+            select.addEventListener("change", function() {
+                updateStatus(index, this.value);
+            });
+
+            statusCell.appendChild(select);
+            row.appendChild(statusCell);
+
+            const actionCell = document.createElement("td");
+            const deleteButton = document.createElement("button");
+
+            deleteButton.textContent = t.deleteBtn;
+            deleteButton.addEventListener("click", function() {
+                deleteComplaint(index);
+            });
+
+            actionCell.appendChild(deleteButton);
+            row.appendChild(actionCell);
+
+            table.appendChild(row);
+        });
+    }
+async function updateStatus(index, newStatus) {
+    const complaints = getComplaints();
+
+    
+    if (!complaints[index]) return;
+    const complaint = complaints[index];
+
+    if (!complaint.id) {
+    alert(translations[localStorage.getItem("selectedLanguage") || "en"].complaintIdMissing);
+    return;
+}
+
+    try {
+        await window.updateComplaintStatusInFirebase(
+            complaint.id,
+            newStatus
+        );
+
+        complaints[index].status = newStatus;
+
+        localStorage.setItem(
+            "complaints",
+            JSON.stringify(complaints)
+        );
+
+        displayComplaints();
+
+        alert(translations[localStorage.getItem("selectedLanguage") || "en"].statusUpdated);
+
+    } catch (error) {
+        console.error("Status update failed:", error);
+        alert(translations[localStorage.getItem("selectedLanguage") || "en"].statusUpdateFailed);
+    }
+}
+   async function deleteComplaint(index) {
+   if (!confirm(translations[localStorage.getItem("selectedLanguage") || "en"].confirmDelete)) {
+    return;
+}
+    const complaints = getComplaints();
+    const complaint = complaints[index];
+
+    if (!complaint || !complaint.id) {
+       alert(translations[localStorage.getItem("selectedLanguage") || "en"].complaintNotFoundAdmin);
+        return;
+    }
+
+    try {
+        await window.firebaseDeleteComplaint(complaint.id);
+        complaints.splice(index, 1);
+
+        localStorage.setItem(
+            "complaints",
+            JSON.stringify(complaints)
+        );
+
+        displayComplaints();
+
+       alert(translations[localStorage.getItem("selectedLanguage") || "en"].deleteSuccess);
+    } catch (error) {
+        console.error("Delete failed:", error);
+       alert(translations[localStorage.getItem("selectedLanguage") || "en"].deleteFailed);
+    }
+} 
+
+    
+window.displayComplaints = displayComplaints;
+    displayComplaints();
+</script>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-analytics.js";
+  import {
+  getFirestore,
+  collection,
+  getDocs,
+  addDoc,
+  doc,
+  updateDoc,
+  deleteDoc
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-librarie
+  //Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyAl9UXiblgVmD2XIjooD2aN5bLm7kVaVEo",
+    authDomain: "cityfix-3bd22.firebaseapp.com",
+    projectId: "cityfix-3bd22",
+    storageBucket: "cityfix-3bd22.firebasestorage.app",
+    messagingSenderId: "152769443505",
+    appId: "1:152769443505:web:3ccb98abb9ec6efdac1490",
+    measurementId: "G-BKX4WYQTDN"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  window.firebaseDeleteComplaint = async function(id) {
+    await deleteDoc(doc(db, "complaints", id));
+};
+  const analytics = getAnalytics(app);
+  window.updateComplaintStatusInFirebase = async (complaintId, newStatus) => {
+    await updateDoc(
+        doc(db, "complaints", complaintId),
+        { status: newStatus }
+    );
+};
+ try {
+    const snapshot = await getDocs(collection(db, "complaints"));
+    console.log("Total Firebase complaints:", snapshot.size);
+
+    const firebaseComplaints = snapshot.docs.map(item => ({
+        id: item.id,
+        ...item.data()
+    }));
+
+    localStorage.setItem(
+        "complaints",
+        JSON.stringify(firebaseComplaints)
+    );
+
+    if (typeof window.displayComplaints === "function") {
+        window.displayComplaints();
+    }
+
+    console.log("Firebase complaints loaded successfully!");
+
+} catch (error) {
+    console.error("Admin Firebase error:", error);
+    alert("Firebase Error: " + error.message);
+}
+</script>
+
+</body>
+</html>

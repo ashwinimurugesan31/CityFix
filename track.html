@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CityFix - Track Complaint</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+   <a href="index.html" data-i18n="home">Home</a>
+    <a href="report.html" data-i18n="report">Report an Issue</a>
+    <a href="track.html" data-i18n="track">Track Complaint</a>
+    <a href="admin.html" data-i18n="admin">Admin Dashboard</a>  
+</nav> 
+    <h1 data-i18n="trackTitle">Track Your Complaint</h1>
+
+<p data-i18n="enterComplaintId">Enter your Complaint ID below</p>
+
+<input
+    type="text"
+    id="complaintId"
+    placeholder="Example: CF123456"
+    data-i18n-placeholder="complaintPlaceholder"
+>
+<button type="button" id="trackBtn" data-i18n="trackBtn">
+    Track Complaint
+</button>
+    <div id="result"></div>
+    <script src="language.js"></script>
+    
+<script type="module">
+  import { initializeApp } 
+  from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+
+  import {
+    getFirestore,
+    doc,
+    getDoc
+  } 
+  from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+     apiKey: "AIzaSyAl9UXiblgVmD2XIjooD2aN5bLm7kVaVEo",
+     authDomain: "cityfix-3bd22.firebaseapp.com",
+     projectId: "cityfix-3bd22",
+     storageBucket: "cityfix-3bd22.firebasestorage.app",
+     messagingSenderId: "152769443505",
+     appId: "1:152769443505:web:3ccb98abb9ec6efdac1490",
+     measurementId: "G-BKX4WYQTDN"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+document.getElementById("trackBtn").addEventListener("click", async function() {
+
+    const complaintId = document.getElementById("complaintId").value.trim();
+    const result = document.getElementById("result");
+
+    if (!complaintId) {
+       result.innerText = translations[localStorage.getItem("selectedLanguage") || "en"].pleaseEnterId;
+        return;
+    }
+
+   result.innerText = translations[localStorage.getItem("selectedLanguage") || "en"].searching;
+    try {
+        const complaintRef = doc(db, "complaints", complaintId);
+        const complaintSnap = await getDoc(complaintRef);
+
+        if (complaintSnap.exists()) {
+
+            const complaint = complaintSnap.data();
+
+            const lang = localStorage.getItem("selectedLanguage") || "en";
+const t = translations[lang];
+
+result.innerHTML = `
+    <h3>${t.complaintFound}</h3>
+    <p><b>${t.complaintIdLabel}:</b> ${complaintSnap.id}</p>
+    <p><b>${t.nameLabel}:</b> ${complaint.name || ""}</p>
+    <p><b>${t.issueLabel}:</b> ${complaint.issueType || ""}</p>
+    <p><b>${t.location}:</b> ${complaint.location || ""}</p>
+    <p><b>${t.descriptionLabel}:</b> ${complaint.description || ""}</p>
+    <p><b>${t.statusLabel}:</b> ${complaint.status || "Pending"}</p>
+`;
+
+        } else {
+         result.innerText = translations[localStorage.getItem("selectedLanguage") || "en"].complaintNotFound;   
+        }
+
+    } catch (error) {
+        console.error(error);
+        result.innerText = translations[localStorage.getItem("selectedLanguage") || "en"].trackingError;
+    }
+
+});
+  
+</script>
+</body>
+</html>
